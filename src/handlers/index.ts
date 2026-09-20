@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import slug from 'slug';
+import formidable from 'formidable';
 import User from "../models/User";
 import { checkPassword, hashPassword } from '../utils/auth';
 import { generateJWT } from '../utils/jwt';
+import cloudinary from '../config/cloudinary';
 
 export const createAcount = async (req: Request, res: Response) => {
 
@@ -75,6 +77,18 @@ export const updateProfile = async (req: Request, res: Response) => {
 
         res.send('Profile Actualizado Correctamente');
     } catch(e) {
+        const error = new Error('Hubo un error');
+        return res.status(500).json({error: error.message})
+    }
+}
+
+export const uploadImage = async (req: Request, res: Response) => {
+    try {
+        const form = formidable({multiples: false});
+        form.parse(req, (error, fields, files) => {
+            console.log(files.file[0].filepath);
+        });
+    } catch (e) {
         const error = new Error('Hubo un error');
         return res.status(500).json({error: error.message})
     }
