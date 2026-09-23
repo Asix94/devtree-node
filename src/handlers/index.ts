@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { validationResult } from 'express-validator'
 import slug from 'slug';
 import formidable from 'formidable';
 import {v4 as uuid} from 'uuid';
@@ -37,6 +38,11 @@ export const createAcount = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
 
+    let errors = validationResult(req)
+    if(!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() })
+    }
+    
     const { email, password } = req.body;
 
     const user = await User.findOne({email});
