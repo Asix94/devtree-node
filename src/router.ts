@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { createAcount, getUser, getUserByHandle, login, updateProfile, uploadImage } from './handlers';
+import { createAcount, getUser, getUserByHandle, login, searchByHandle, updateProfile, uploadImage } from './handlers';
 import { handleInputErrors } from './middleware/validation';
 import { authenticate } from './middleware/auth';
 
 const router = Router();
 
-router.post('/auth/register', 
+router.post('/auth/register',
     body('handle')
         .notEmpty()
         .withMessage('El Handle no puede ir vacio'),
@@ -17,13 +17,13 @@ router.post('/auth/register',
         .isEmail()
         .withMessage('E-mail no valido'),
     body('password')
-        .isLength({min: 8})
+        .isLength({ min: 8 })
         .withMessage('El Password es muy corto minimo 8 caracteres'),
     handleInputErrors,
     createAcount
 );
 
-router.post('/auth/login', 
+router.post('/auth/login',
     body('email')
         .isEmail()
         .withMessage('E-mail no valido'),
@@ -31,24 +31,29 @@ router.post('/auth/login',
         .notEmpty()
         .withMessage('El Password es obligatorio'),
     handleInputErrors,
-    login 
+    login
 );
 
 router.get('/user', authenticate, getUser);
-router.patch('/user', 
+router.patch('/user',
     body('handle')
         .notEmpty()
         .withMessage('El Handle no puede ir vacio'),
-    body('description')
-        .notEmpty()
-        .withMessage('La Descripción no puede ir vacia'),
     handleInputErrors,
-    authenticate, 
+    authenticate,
     updateProfile
 );
 
 router.post('/user/image', authenticate, uploadImage)
 
 router.get('/:handle', getUserByHandle)
+
+router.post('/search',
+    body('handle')
+        .notEmpty()
+        .withMessage('El handle no puede ir vacio'),
+    handleInputErrors,
+    searchByHandle
+);
 
 export default router;
